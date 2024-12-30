@@ -163,7 +163,7 @@ JOYSTICK_CODE_VALUE_MAP = {
     'Microsoft X-Box 360 pad': (XINPUT_CODE_MAP, XINPUT_VALUE_MAP),
     'Sony Computer Entertainment Wireless Controller': (PS4_CODE_MAP, PS4_VALUE_MAP),
     'Logitech Gamepad F710': (F710_CODE_MAP, F710_VALUE_MAP),
-    'Microsoft X-Box One pad': (XONE_CODE_MAP, XONE_VALUE_MAP)
+    'Microsoft X-Box One S pad': (XONE_CODE_MAP, XONE_VALUE_MAP)
 }
 
 class JoystickRos2(Node):
@@ -186,7 +186,7 @@ class JoystickRos2(Node):
         self.joy.buttons = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
         # Joy publisher
-        self.publisher_ = self.create_publisher(Joy, 'joy')
+        self.publisher_ = self.create_publisher(Joy, 'joy',10)
 
         # logic params
         self.last_event = None
@@ -221,6 +221,7 @@ class JoystickRos2(Node):
 
             # detected joystick is not keymapped yet
             if (gamepad.name not in JOYSTICK_CODE_VALUE_MAP):
+                print(gamepad.name)
                 print('Sorry, joystick type not supported yet! Please plug in supported joystick')
                 time.sleep(1)
                 device_manager.find_devices()
