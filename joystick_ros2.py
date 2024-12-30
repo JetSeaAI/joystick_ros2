@@ -153,7 +153,7 @@ XONE_VALUE_MAP = {
     1: (-32768, 32767),
     2: (0, 1023),
     3: (-32768, 32767),
-    4: (-32768, -32767),
+    4: (-32768, 32767),
     5: (0, 1023),
     6: (-1, 1),
     7: (-1, 1)
@@ -173,7 +173,7 @@ class JoystickRos2(Node):
 
         # Node params
         # TODO : use rosparam
-        self.deadzone = 0.05
+        self.deadzone = 0.1
         self.autorepeat_rate = 0.0
         self.coalesce_interval = 0.001
         self.sleep_time = 0.01
@@ -182,7 +182,7 @@ class JoystickRos2(Node):
         self.joy = Joy()
         self.joy.header = Header()
         self.joy.header.frame_id = ''
-        self.joy.axes = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        self.joy.axes = [0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0]
         self.joy.buttons = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
         # Joy publisher
