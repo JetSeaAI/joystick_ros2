@@ -57,7 +57,7 @@ from itertools import count
 from operator import itemgetter
 from multiprocessing import Process, Pipe
 import ctypes
-
+import select
 __version__ = "0.1"
 
 WIN = True if platform.system() == 'Windows' else False
@@ -1911,6 +1911,7 @@ def mac_keyboard_process(pipe):
     from Cocoa import (NSEvent, NSKeyDownMask, NSKeyUpMask,
                        NSFlagsChangedMask)
     from PyObjCTools import AppHelper
+  
 
     class MacKeyboardSetup(NSObject):
         """Setup the handler."""
@@ -2065,8 +2066,12 @@ class InputDevice(object):
                 yield event
 
     def _get_data(self, read_size):
-        """Get data from the character device."""
-        return self._character_device.read(read_size)
+        """Get data from the character device with a timeout to avoid blocking."""
+        timeout = 0.1  # Timeout in seconds
+        ready, _, _ = select.select([self._character_device], [], [], timeout)
+        if ready:
+            return self._character_device.read(read_size)
+        return None  # Return None if no data is available within the timeout
 
     @staticmethod
     def _get_target_function():

@@ -174,7 +174,7 @@ class JoystickRos2(Node):
         # Node params
         # TODO : use rosparam
         self.deadzone = 0.1
-        self.autorepeat_rate = 0.0
+        self.autorepeat_rate = 10.0
         self.coalesce_interval = 0.001
         self.sleep_time = 0.01
 
@@ -237,13 +237,18 @@ class JoystickRos2(Node):
 
             # read inputs from joystick
             while True:
+               
                 try:
                     events = gamepad._do_iter()
+
                 # check unplugged joystick
                 except OSError:
                     print('Joystick not found. Will retry every second.')
                     time.sleep(1)
                     device_manager.find_devices()
+                    # reset joy position for safety
+                    self.joy.axes = [0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0]
+                    self.joy.buttons = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
                     break
                 if events:
                     for event in events:
@@ -264,6 +269,9 @@ class JoystickRos2(Node):
             ## autorepeat
             if ((self.autorepeat_rate > 0.0) and (time.time() - self.last_publish_time > 1/self.autorepeat_rate)):
                 self.publish_joy()
+                # self.get_logger().warning('No events detected from joystick. Repeating...')
+
+                
 
             # sleep to decrease cpu usage
             time.sleep(self.sleep_time)
