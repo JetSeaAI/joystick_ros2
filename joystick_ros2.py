@@ -170,23 +170,28 @@ class JoystickRos2(Node):
 
     def __init__(self):
         super().__init__('joystick_ros2')
+        
+        # Declare parameters for autorepeat_rate, coalesce_interval, sleep_time, deadzone and topic name
+        self.declare_parameter('autorepeat_rate', 10.0)
+        self.declare_parameter('coalesce_interval', 0.01)
+        self.declare_parameter('sleep_time', 0.01)
+        self.declare_parameter('deadzone', 0.1)
+        self.declare_parameter('joy_topic', 'xbox_one_s/joy')
 
-        # Node params
-        # TODO : use rosparam
-        self.deadzone = 0.1
-        self.autorepeat_rate = 10.0
-        self.coalesce_interval = 0.001
-        self.sleep_time = 0.01
+        # Get parameters
+        self.autorepeat_rate = self.get_parameter('autorepeat_rate').value
+        self.coalesce_interval = self.get_parameter('coalesce_interval').value
+        self.sleep_time = self.get_parameter('sleep_time').value
+        self.deadzone = self.get_parameter('deadzone').value
 
-        # Joy message
+        # Joy message and publisher using topic name parameter
         self.joy = Joy()
         self.joy.header = Header()
         self.joy.header.frame_id = ''
         self.joy.axes = [0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0]
         self.joy.buttons = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-
-        # Joy publisher
-        self.publisher_ = self.create_publisher(Joy, 'xbox_one_s/joy',10)
+        topic_name = self.get_parameter('joy_topic').value
+        self.publisher_ = self.create_publisher(Joy, topic_name, 10)
 
         # logic params
         self.last_event = None
